@@ -11,7 +11,12 @@ import './editor.scss';
 
 const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
+const { BlockControls } = wp.editor;
+const { IconButton } = wp.components;
 
+const refresh = () => {
+	console.log('=D');
+};
 /**
  * Register: aa Gutenberg Block.
  *
@@ -48,7 +53,12 @@ registerBlockType( 'cgb/block-block-table-contents', {
 		// Creates a <p class='wp-block-cgb-block-block-table-contents'></p>.
 		return (
 			<div className={ props.className }>
-				<p>— Hello from the backend.</p>
+				<BlockControls key="controls">
+					<IconButton
+						icon="update" label="Refresh" onClick={ refresh }
+					/>
+				</BlockControls>
+				<p>— Hello from the dsadsa.</p>
 				<p>
 					CGB BLOCK: <code>block-table-contents</code> is a new Gutenberg block
 				</p>
