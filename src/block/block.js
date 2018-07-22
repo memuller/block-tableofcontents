@@ -15,7 +15,18 @@ const { BlockControls } = wp.editor;
 const { IconButton } = wp.components;
 
 const refresh = () => {
-	console.log('=D');
+
+/**
+ * @return {[Headings]} list of headings
+ */
+const jQueryGetHeadings = () => {
+	const headings = [];
+	jQuery( '.wp-block-heading :header' ).each( ( i, element ) => {
+		const level = element.tagName[ 1 ];
+		const id = element.id;
+		headings.push( { level, element, id } );
+	} );
+	return headings;
 };
 /**
  * Register: aa Gutenberg Block.
