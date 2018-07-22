@@ -13,8 +13,27 @@ const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
 const { BlockControls } = wp.editor;
 const { IconButton } = wp.components;
+const { select } = wp.data;
+import { flatMap } from 'lodash';
+
 
 const refresh = () => {
+	console.log(getHeadings());
+};
+
+const getHeadings = () => {
+	const { getBlocks } = select( 'core/editor' );
+	const blocks = flatMap( getBlocks(), ( block = {} ) => {
+		if ( block.name === 'core/heading' ) {
+			return {
+				...block,
+				level: block.attributes.level,
+			};
+		}
+		return [];
+	} );
+	return blocks;
+};
 
 /**
  * @return {[Headings]} list of headings
@@ -28,6 +47,7 @@ const jQueryGetHeadings = () => {
 	} );
 	return headings;
 };
+
 /**
  * Register: aa Gutenberg Block.
  *
