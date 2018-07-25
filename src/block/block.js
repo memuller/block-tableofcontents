@@ -9,125 +9,97 @@
 import './style.scss';
 import './editor.scss';
 
+import { Store } from './../store.js';
+
 const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
-const { BlockControls } = wp.editor;
+const { registerBlockType, children } = wp.blocks; // Import registerBlockType() from wp.blocks
+const { BlockControls, RichText } = wp.editor;
 const { IconButton } = wp.components;
-const { select } = wp.data;
-import { flatMap } from 'lodash';
 
+import { Component, RawHTML } from '@wordpress/element';
 
-const refresh = () => {
-	console.log(getHeadings());
-};
+class EditTableOfContents extends Component {
+	state = {
+		blocks: [],
+	};
 
-const getHeadings = () => {
-	const { getBlocks } = select( 'core/editor' );
-	const blocks = flatMap( getBlocks(), ( block = {} ) => {
-		if ( block.name === 'core/heading' ) {
-			return {
-				...block,
-				level: block.attributes.level,
-			};
+	refresh() {
+		this.setState( { blocks: this.fetch() } );
+		this.buildTable();
+	}
+
+	fetch() {
+		Store.dispatch.fetchBlocks();
+		Store.dispatch.addAnchors();
+		return Store.select.getBlocks();
+	}
+
+	buildTable() {
+		const { setAttributes } = this.props;
+		const item = ( content, anchor ) => {
+			return (
+				<li>
+					<a href={ anchor } > { content } </a>
+				</li>
+			);
+		};
+		const elements = [];
+		for ( const block of this.state.blocks ) {
+			elements.push(
+				item( block.attributes.content, block.attributes.anchor )
+			);
 		}
-		return [];
-	} );
-	return blocks;
-};
+		const content = ( <ul>{ elements }</ul> );
+		setAttributes( { content } );
+		return content;
+	}
 
-/**
- * @return {[Headings]} list of headings
- */
-const jQueryGetHeadings = () => {
-	const headings = [];
-	jQuery( '.wp-block-heading :header' ).each( ( i, element ) => {
-		const level = element.tagName[ 1 ];
-		const id = element.id;
-		headings.push( { level, element, id } );
-	} );
-	return headings;
-};
+	constructor( args ) {
+		super( args );
+		this.state.blocks = this.fetch();
+	}
 
-/**
- * Register: aa Gutenberg Block.
- *
- * Registers a new block provided a unique name and an object defining its
- * behavior. Once registered, the block is made editor as an option to any
- * editor interface where blocks are implemented.
- *
- * @link https://wordpress.org/gutenberg/handbook/block-api/
- * @param  {string}   name     Block name.
- * @param  {Object}   settings Block settings.
- * @return {?WPBlock}          The block, if it has been successfully
- *                             registered; otherwise `undefined`.
- */
+	render() {
+		const { attributes, setAttributes, className } = this.props;
+		return (
+			<div className={ className }>
+				<BlockControls key="controls">
+					<IconButton
+						icon="update" label="Refresh" onClick={ this.refresh.bind( this ) }
+					/>
+				</BlockControls>
+				<div className="content">
+					<RichText.Content value={ attributes.content || this.buildTable() } />
+				</div>
+			</div>
+		);
+	}
+}
+
 registerBlockType( 'cgb/block-block-table-contents', {
 	// Block name. Block names must be string that contains a namespace prefix. Example: my-plugin/my-custom-block.
-	title: __( 'block-table-contents - CGB Block' ), // Block title.
-	icon: 'shield', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
-	category: 'common', // Block category — Group blocks together based on common traits E.g. common, formatting, layout widgets, embed.
+	title: __( 'block-table-contents - CGB Block' ),
+	icon: 'list-view',
+	category: 'layout',
 	keywords: [
 		__( 'block-table-contents — CGB Block' ),
 		__( 'CGB Example' ),
 		__( 'create-guten-block' ),
 	],
 
-	/**
-	 * The edit function describes the structure of your block in the context of the editor.
-	 * This represents what the editor will render when the block is used.
-	 *
-	 * The "edit" property must be a valid function.
-	 *
-	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
-	 */
-	edit: function( props ) {
-		// Creates a <p class='wp-block-cgb-block-block-table-contents'></p>.
-		return (
-			<div className={ props.className }>
-				<BlockControls key="controls">
-					<IconButton
-						icon="update" label="Refresh" onClick={ refresh }
-					/>
-				</BlockControls>
-				<p>— Hello from the dsadsa.</p>
-				<p>
-					CGB BLOCK: <code>block-table-contents</code> is a new Gutenberg block
-				</p>
-				<p>
-					It was created via{ ' ' }
-					<code>
-						<a href="https://github.com/ahmadawais/create-guten-block">
-							create-guten-block
-						</a>
-					</code>.
-				</p>
-			</div>
-		);
+	attributes: {
+		content: {
+			source: 'children',
+			selector: '.content',
+			default: null,
+		},
 	},
 
-	/**
-	 * The save function defines the way in which the different attributes should be combined
-	 * into the final markup, which is then serialized by Gutenberg into post_content.
-	 *
-	 * The "save" property must be specified and must be a valid function.
-	 *
-	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
-	 */
-	save: function( props ) {
+	edit: EditTableOfContents,
+	save: function( { className, attributes } ) {
 		return (
-			<div>
-				<p>— Hello from the frontend.</p>
-				<p>
-					CGB BLOCK: <code>block-table-contents</code> is a new Gutenberg block.
-				</p>
-				<p>
-					It was created via{ ' ' }
-					<code>
-						<a href="https://github.com/ahmadawais/create-guten-block">
-							create-guten-block
-						</a>
-					</code>.
-				</p>
+			<div className={ className }>
+				<RichText.Content tagName="div" value={ attributes.content } />
 			</div>
 		);
 	},

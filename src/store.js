@@ -1,13 +1,21 @@
 const { registerStore, select, dispatch } = wp.data;
 const { getBlocks } = select( 'core/editor' );
-import { flatMap } from 'lodash';
+import { flatMap, kebabCase } from 'lodash';
 
 const STORE_NAME = 'block.table-of-contents';
 const DEFAULT_STATE = {
 	heading_blocks: [],
 };
 
-const Store = registerStore( STORE_NAME, {
+/** Returns an HTML anchor-friendly for a given string
+ * @param {string} text the string, expected to be a heading's content
+ * @returns {string} the anchor-friendly result
+*/
+const anchorize = ( text ) => {
+	return kebabCase( text );
+};
+
+registerStore( STORE_NAME, {
 	reducer( state = DEFAULT_STATE, action ) {
 		switch ( action.type ) {
 			case 'SET_BLOCKS':
@@ -15,20 +23,66 @@ const Store = registerStore( STORE_NAME, {
 					...state,
 					heading_blocks: action.blocks,
 				};
-			case 'FETCH_BLOCKS':
-				return {
 
+			case 'ADD_ANCHORS':
+				for ( const heading of state.heading_blocks ) {
+					if ( ! ( heading.isEmpty ) && ! heading.attributes.anchor ) {
+						heading.attributes.anchor = anchorize( heading.attributes.content );
+					}
 				}
+				return state;
+
+			case 'FETCH_BLOCKS':
+				const blocks = flatMap( getBlocks(), ( block = {} ) => {
+					if ( block.name === 'core/heading' ) {
+						return {
+							...block,
+							level: block.attributes.level,
+							isEmpty: ! block.attributes.content || block.attributes.content.length === 0,
+						};
+					}
+					return [];
+				} );
+
+				return {
+					...state,
+					heading_blocks: blocks,
+				};
 		}
 	},
 
 	actions: {
+		// Stores given blocks.
 		setBlocks( blocks = [] ) {
 			return {
 				type: 'SET_BLOCKS',
 				blocks,
 			};
 		},
+		// Adds an anchor to all blocks that are not empty
+		// and do not already have an anchor set.
+		addAnchors() {
+			return {
+				type: 'ADD_ANCHORS',
+			};
+		},
+		/** Fetches heading blocks, enriches, and stores them.
+		 *
+		 * Gets all blocks from core/editor store;
+		 * then if they're core/heading blocks, enriches them with:
+		 * 	- level: the heading level
+		 * 	- isEmpty: true if there's no text in the heading
+		 * Stores them using setBlocks afterwards.
+		 *
+		 * @triggers setBlocks
+		 * @returns {Object} new state
+		 * */
+		fetchBlocks() {
+			return {
+				type: 'FETCH_BLOCKS',
+			};
+		}
+
 	},
 
 	selectors: {
@@ -37,22 +91,13 @@ const Store = registerStore( STORE_NAME, {
 		},
 	},
 
-	resolvers: {
-		getBlocks( state ) {
-			const blocks = flatMap( getBlocks(), ( block = {} ) => {
-				if ( block.name === 'core/heading' ) {
-					return {
-						...block,
-						level: block.attributes.level,
-						isEmpty: ! block.attributes.content || block.attributes.content.length === 0,
-					};
-				}
-				return [];
-			} );
-			dispatch( STORE_NAME ).setBlocks( blocks );
-		},
-	},
+	resolvers: {},
 
 } );
+
+export const Store = {
+	select: select( STORE_NAME ),
+	dispatch: dispatch( STORE_NAME ),
+};
 
 export default Store;
