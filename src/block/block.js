@@ -39,7 +39,7 @@ class EditTableOfContents extends Component {
 		const item = ( content, anchor ) => {
 			return (
 				<li>
-					<a href={ anchor } > { content } </a>
+					<a href={ '#' + anchor } > { content } </a>
 				</li>
 			);
 		};
