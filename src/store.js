@@ -15,6 +15,26 @@ const anchorize = ( text ) => {
 	return kebabCase( text );
 };
 
+/** Recursively fetches core/heading blocks.
+ *  See fetchBlocks bellow and
+ * https: //github.com/WordPress/gutenberg/blob/master/editor/components/document-outline/index.js
+ * @param {?[Element]} blocks an array of blocks to search
+ * @param {?[Element]} path the current search path
+ * @returns {[Element]} a flat map of core/heading elements
+ */
+const recursiveGetHeadings = ( blocks = [], path = [] ) => {
+	return flatMap( blocks, ( block = {} ) => {
+		if ( block.name === 'core/heading' ) {
+			return {
+				...block,
+				level: block.attributes.level,
+				isEmpty: ! block.attributes.content || block.attributes.content.length === 0,
+			};
+		}
+		return recursiveGetHeadings( block.innerBlocks, [ ...path, block ] );
+	} );
+};
+
 registerStore( STORE_NAME, {
 	reducer( state = DEFAULT_STATE, action ) {
 		switch ( action.type ) {
@@ -33,20 +53,9 @@ registerStore( STORE_NAME, {
 				return state;
 
 			case 'FETCH_BLOCKS':
-				const blocks = flatMap( getBlocks(), ( block = {} ) => {
-					if ( block.name === 'core/heading' ) {
-						return {
-							...block,
-							level: block.attributes.level,
-							isEmpty: ! block.attributes.content || block.attributes.content.length === 0,
-						};
-					}
-					return [];
-				} );
-
 				return {
 					...state,
-					heading_blocks: blocks,
+					heading_blocks: recursiveGetHeadings( getBlocks() ),
 				};
 		}
 	},
