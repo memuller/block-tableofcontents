@@ -90,14 +90,14 @@ class EditTableOfContents extends Component {
 	}
 }
 
-registerBlockType( 'cgb/block-block-table-contents', {
-	title: __( 'block-table-contents - CGB Block' ),
+registerBlockType( 'memuller/table-of-contents', {
+	title: __( 'Table of Contents' ),
 	icon: 'list-view',
 	category: 'layout',
 	keywords: [
-		__( 'block-table-contents — CGB Block' ),
-		__( 'CGB Example' ),
-		__( 'create-guten-block' ),
+		__( 'table' ),
+		__( 'table of contents' ),
+		__( 'anchor' ),
 	],
 
 	attributes: {
