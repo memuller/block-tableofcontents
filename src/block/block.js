@@ -49,14 +49,16 @@ class EditTableOfContents extends Component {
 				item( block.attributes.content, block.attributes.anchor )
 			);
 		}
-		const content = ( <ul>{ elements }</ul> );
-		setAttributes( { content } );
-		return content;
+		setAttributes( { content: elements } );
+		return elements;
 	}
 
 	constructor( args ) {
 		super( args );
 		this.state.blocks = this.fetch();
+		if ( ! this.props.attributes.content ) {
+			this.props.attributes.content = this.buildTable();
+		}
 	}
 
 	render() {
@@ -68,9 +70,7 @@ class EditTableOfContents extends Component {
 						icon="update" label="Refresh" onClick={ this.refresh.bind( this ) }
 					/>
 				</BlockControls>
-				<div className="content">
-					<RichText.Content value={ attributes.content || this.buildTable() } />
-				</div>
+				<RichText.Content tagName="ul" value={ attributes.content } />
 			</div>
 		);
 	}
@@ -90,7 +90,7 @@ registerBlockType( 'cgb/block-block-table-contents', {
 	attributes: {
 		content: {
 			source: 'children',
-			selector: '.content',
+			selector: 'ul',
 			default: null,
 		},
 	},
@@ -99,7 +99,7 @@ registerBlockType( 'cgb/block-block-table-contents', {
 	save: function( { className, attributes } ) {
 		return (
 			<div className={ className }>
-				<RichText.Content tagName="div" value={ attributes.content } />
+				<RichText.Content tagName="ul" value={ attributes.content } />
 			</div>
 		);
 	},
