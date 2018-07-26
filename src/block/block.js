@@ -1,41 +1,48 @@
-/**
- * BLOCK: block-table-contents
- *
- * Registering a basic block with Gutenberg.
- * Simple block, renders and saves the same content without any interactivity.
- */
-
 //  Import CSS.
 import './style.scss';
 import './editor.scss';
 
 import { Store } from './../store.js';
 
-const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType, children } = wp.blocks; // Import registerBlockType() from wp.blocks
+const { __ } = wp.i18n;
+const { registerBlockType } = wp.blocks;
 const { BlockControls, RichText } = wp.editor;
 const { IconButton } = wp.components;
 
-import { Component, RawHTML } from '@wordpress/element';
+import { Component } from '@wordpress/element';
 
 class EditTableOfContents extends Component {
 	state = {
 		blocks: [],
 	};
 
+	/**
+	 * Gets heading blocks into state.blocks and the built
+	 * list items into attributes.content.
+	 * @sets attributes, state
+	 */
 	refresh() {
 		this.setState( { blocks: this.fetch() } );
+		this.props.setAttributes( { content: this.buildTable() } );
 		this.buildTable();
 	}
 
+	/**
+	 * Processes heading blocks via Store and returns
+	 * those heading blocks.
+	 * @returns {[Elements]} an array of core/heading blocks
+	 */
 	fetch() {
 		Store.dispatch.fetchBlocks();
 		Store.dispatch.addAnchors();
 		return Store.select.getBlocks();
 	}
 
+	/**
+	 * Builds the list of <li>s that make up the table of contents.
+	 * @returns {[Elements]} an array of <li>s
+	 */
 	buildTable() {
-		const { setAttributes } = this.props;
 		const item = ( content, anchor ) => {
 			return (
 				<li>
@@ -49,20 +56,27 @@ class EditTableOfContents extends Component {
 				item( block.attributes.content, block.attributes.anchor )
 			);
 		}
-		setAttributes( { content: elements } );
 		return elements;
 	}
 
+	/**
+	 * Sets initial state, if content attribute is not
+	 * available from post content.
+	 * @param {any} args none expected.
+	 * @sets state, attributes
+	 */
 	constructor( args ) {
 		super( args );
-		this.state.blocks = this.fetch();
-		if ( ! this.props.attributes.content ) {
-			this.props.attributes.content = this.buildTable();
+		const { state, props } = this;
+		const { attributes } = props;
+		state.blocks = this.fetch();
+		if ( ! attributes.content ) {
+			attributes.content = this.buildTable();
 		}
 	}
 
 	render() {
-		const { attributes, setAttributes, className } = this.props;
+		const { attributes, className } = this.props;
 		return (
 			<div className={ className }>
 				<BlockControls key="controls">
@@ -77,7 +91,6 @@ class EditTableOfContents extends Component {
 }
 
 registerBlockType( 'cgb/block-block-table-contents', {
-	// Block name. Block names must be string that contains a namespace prefix. Example: my-plugin/my-custom-block.
 	title: __( 'block-table-contents - CGB Block' ),
 	icon: 'list-view',
 	category: 'layout',
