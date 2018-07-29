@@ -90,7 +90,7 @@ registerStore( STORE_NAME, {
 			return {
 				type: 'FETCH_BLOCKS',
 			};
-		}
+		},
 
 	},
 

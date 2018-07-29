@@ -11,6 +11,8 @@ const { IconButton } = wp.components;
 
 import { Component } from '@wordpress/element';
 
+import { TableItem } from './TableItem.js';
+
 class EditTableOfContents extends Component {
 	state = {
 		blocks: [],
@@ -53,7 +55,11 @@ class EditTableOfContents extends Component {
 		const elements = [];
 		for ( const block of this.state.blocks ) {
 			elements.push(
-				item( block.attributes.content, block.attributes.anchor )
+				<TableItem
+					title={ block.attributes.content }
+					level={ block.level }
+					anchor={ block.attributes.anchor }
+				/>
 			);
 		}
 		return elements;
