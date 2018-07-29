@@ -16,3 +16,13 @@
   margin: 0 auto;
   max-width: 740px;
   padding: 2rem; }
+  .wp-block-memuller-table-of-contents li.lvl-2 {
+    margin-left: 1.25rem; }
+  .wp-block-memuller-table-of-contents li.lvl-3 {
+    margin-left: 2.5rem; }
+  .wp-block-memuller-table-of-contents li.lvl-4 {
+    margin-left: 3.75rem; }
+  .wp-block-memuller-table-of-contents li.lvl-5 {
+    margin-left: 5rem; }
+  .wp-block-memuller-table-of-contents li.lvl-6 {
+    margin-left: 6.25rem; }

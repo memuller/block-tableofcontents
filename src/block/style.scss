@@ -4,11 +4,21 @@
  * CSS for both Frontend+Backend.
  */
 
+$list-ident: 1.25rem;
+
 .wp-block-memuller-table-of-contents {
   background: $red;
   border: 0.2rem solid $black;
   color: $black;
   margin: 0 auto;
   max-width: 740px;
-  padding: 2rem;
+	padding: 2rem;
+
+	li {
+		&.lvl-2 { margin-left: $list-ident; }
+		&.lvl-3 { margin-left: $list-ident * 2; }
+		&.lvl-4 { margin-left: $list-ident * 3; }
+		&.lvl-5 { margin-left: $list-ident * 4; }
+		&.lvl-6 { margin-left: $list-ident * 5; }
+	}
 }
