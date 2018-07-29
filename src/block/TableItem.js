@@ -9,8 +9,9 @@ export class TableItem extends Component {
 
 	render() {
 		const { title, level, anchor } = this.props;
+		const anchorClass = `lvl-${ level }`;
 		return (
-			<li key={ anchor } >
+			<li key={ anchor } className={ anchorClass } >
 				<a href={ '#' + anchor }> { title } </a>
 			</li>
 		);
