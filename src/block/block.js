@@ -7,7 +7,7 @@ import { Store } from './../store.js';
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
 const { BlockControls, RichText } = wp.editor;
-const { IconButton } = wp.components;
+const { Toolbar } = wp.components;
 
 import { Component } from '@wordpress/element';
 
@@ -23,7 +23,7 @@ class EditTableOfContents extends Component {
 	 * list items into attributes.content.
 	 * @sets attributes, state
 	 */
-	refresh() {
+	refresh = () => {
 		this.setState( { blocks: this.fetch() } );
 		this.props.setAttributes( { content: this.buildTable() } );
 		this.buildTable();
@@ -86,9 +86,11 @@ class EditTableOfContents extends Component {
 		return (
 			<div className={ className }>
 				<BlockControls key="controls">
-					<IconButton
-						icon="update" label="Refresh" onClick={ this.refresh.bind( this ) }
-					/>
+					<Toolbar controls={ [ {
+						icon: 'update',
+						title: __( 'Refresh' ),
+						onClick: this.refresh,
+					} ] } />
 				</BlockControls>
 				<RichText.Content tagName="ul" value={ attributes.content } />
 			</div>
