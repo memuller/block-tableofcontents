@@ -2,15 +2,13 @@
 import './style.scss';
 import './editor.scss';
 
-import { Store } from './../store.js';
-
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
 const { BlockControls, RichText } = wp.editor;
 const { Toolbar } = wp.components;
+import { Component } from 'react';
 
-import { Component } from '@wordpress/element';
-
+import { Store } from './../store.js';
 import { TableItem } from './TableItem.js';
 
 class EditTableOfContents extends Component {
@@ -45,13 +43,6 @@ class EditTableOfContents extends Component {
 	 * @returns {[Elements]} an array of <li>s
 	 */
 	buildTable() {
-		const item = ( content, anchor ) => {
-			return (
-				<li key={ anchor }>
-					<a href={ '#' + anchor } > { content } </a>
-				</li>
-			);
-		};
 		const elements = [];
 		for ( const block of this.state.blocks ) {
 			elements.push(
