@@ -1,0 +1,15 @@
+{
+	"name": "memuller/block-tableofcontents",
+	"description": "a Wordpress block with links to post headings. ",
+	"type": "wordpress-plugin",
+	"version": "0.1.0",
+	"minimum-stability": "dev",
+	"license": "GPL-3.0-only",
+	"authors": [{
+		"name": "Matheus E. Muller",
+		"email": "hello@memuller.com"
+	}],
+	"require": {
+		"composer/installers": "~1.0"
+	}
+}
