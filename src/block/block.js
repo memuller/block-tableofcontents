@@ -4,8 +4,9 @@ import './editor.scss';
 
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
-const { BlockControls, RichText } = wp.editor;
-const { Toolbar } = wp.components;
+const { BlockControls, RichText, InspectorControls } = wp.editor;
+const { Toolbar, TextControl, PanelBody } = wp.components;
+
 import { Component } from 'react';
 
 import { Store } from './../store.js';
@@ -25,6 +26,15 @@ class EditTableOfContents extends Component {
 		this.setState( { blocks: this.fetch() } );
 		this.props.setAttributes( { content: this.buildTable() } );
 		this.buildTable();
+	}
+
+	/**
+	 * Sets title property.
+	 * @param {String} text text to be set
+	 * @sets attributes
+	 */
+	setTitle = ( text ) => {
+		this.props.setAttributes( { title: text } );
 	}
 
 	/**
@@ -73,7 +83,23 @@ class EditTableOfContents extends Component {
 	}
 
 	render() {
-		const { attributes, className } = this.props;
+		const { attributes, className, isSelected } = this.props;
+
+		let titleSection = '';
+		if ( attributes.title && attributes.title.length > 0 ) {
+			titleSection = <h2> { attributes.title } </h2>;
+		}
+
+		let inspectorSection = '';
+		if ( isSelected ) {
+			inspectorSection =
+				<InspectorControls>
+					<PanelBody title={ __( 'Display Settings' ) }>
+						<TextControl label={ __( 'Title' ) + ` (${ __( 'optional' ) })` } value={ attributes.title } onChange={ this.setTitle } />
+					</PanelBody>
+				</InspectorControls>;
+		}
+
 		return (
 			<div className={ className }>
 				<BlockControls key="controls">
@@ -83,6 +109,8 @@ class EditTableOfContents extends Component {
 						onClick: this.refresh,
 					} ] } />
 				</BlockControls>
+				{ inspectorSection }
+				{ titleSection }
 				<RichText.Content tagName="ul" value={ attributes.content } />
 			</div>
 		);
@@ -91,6 +119,7 @@ class EditTableOfContents extends Component {
 
 registerBlockType( 'memuller/table-of-contents', {
 	title: __( 'Table of Contents' ),
+	description: __( 'a clickable list of headings.' ),
 	icon: 'list-view',
 	category: 'layout',
 	keywords: [
@@ -105,12 +134,24 @@ registerBlockType( 'memuller/table-of-contents', {
 			selector: 'ul',
 			default: null,
 		},
+		title: {
+			source: 'text',
+			selector: 'h2',
+			default: null,
+		},
 	},
 
 	edit: EditTableOfContents,
 	save: function( { className, attributes } ) {
+		let title;
+		if ( attributes.title && attributes.title.length > 0 ) {
+			title = <h2> { attributes.title } </h2>;
+		} else {
+			title = '';
+		}
 		return (
 			<div className={ className }>
+				{ title }
 				<RichText.Content tagName="ul" value={ attributes.content } />
 			</div>
 		);
