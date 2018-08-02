@@ -1,6 +1,6 @@
 {
-  "name": "block-table-contents-cgb-guten-block",
-  "version": "1.0.0",
+  "name": "block-tableofcontents",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "cgb-scripts start",

@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: block-table-contents — CGB Gutenberg Block Plugin
- * Plugin URI: https://github.com/ahmadawais/create-guten-block/
- * Description: block-table-contents — is a Gutenberg plugin created via create-guten-block.
- * Author: mrahmadawais, maedahbatool
- * Author URI: https://AhmadAwais.com/
- * Version: 1.0.0
- * License: GPL2+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Plugin Name: block-tableofcontents
+ * Plugin URI: https://github.com/memuller/block-tableofcontents
+ * Description: a Wordpress block with links to post headings.
+ * Author: Matheus E. Muller
+ * Author URI: https://memuller.com/
+ * Version: 0.1.1
+ * License: GPL3
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  *
  * @package CGB
  */
