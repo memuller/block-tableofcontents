@@ -1,5 +1,7 @@
 a Wordpress block with links to post headings.
 
+![Table of Contents screenshot](screenshot.png)
+
 ## Installation
 
 Simply download, install and enable the plugin, and the block will be available within the Gutenberg editor.
@@ -12,7 +14,11 @@ When the block is added, it will automatically create a table of contents using 
 
 If you change the headings, click the "Refresh" button to update the table of contents.
 
+![Toolbar](assets/toolbar.png)
+
 You can set a title for the table of contents block on its property inspector. 
+
+![Inspector](assets/inspector.png)
 
 ## Customization
 

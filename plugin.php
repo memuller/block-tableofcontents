@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: block-tableofcontents
+ * Plugin Name: Table of Contents Block
  * Plugin URI: https://github.com/memuller/block-tableofcontents
  * Description: a Wordpress block with links to post headings.
  * Author: Matheus E. Muller
